@@ -10,17 +10,23 @@ OUTPUT_DIR = "output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 @app.post("/baixar")
-async def baixar_video(
+async def baixar_audio(
     url: str = Form(...),
     cookies: UploadFile = File(None)
 ):
     id = str(uuid.uuid4())
-    output_path = f"{OUTPUT_DIR}/{id}.mp4"
+    output_path = f"{OUTPUT_DIR}/{id}.mp3"
     cookie_path = None
 
     try:
         ydl_opts = {
-            "outtmpl": output_path
+            "format": "bestaudio/best",
+            "outtmpl": output_path,
+            "postprocessors": [{
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "mp3",
+                "preferredquality": "192",
+            }]
         }
 
         if cookies:
